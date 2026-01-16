@@ -9,8 +9,10 @@ import {
   withDerived,
   sortTasks as sortDerived,
 } from '@/utils/logic';
-// Local storage removed per request; keep everything in memory
+
 import { generateSalesTasks } from '@/utils/seed';
+
+type TaskFormPayload = Omit<Task, 'id' | 'createdAt' | 'completedAt'> & { id?: string };
 
 interface UseTasksState {
   tasks: Task[];
@@ -19,7 +21,7 @@ interface UseTasksState {
   derivedSorted: DerivedTask[];
   metrics: Metrics;
   lastDeleted: Task | null;
-  addTask: (task: Omit<Task, 'id'> & { id?: string }) => void;
+  addTask: (task: TaskFormPayload) => void;
   updateTask: (id: string, patch: Partial<Task>) => void;
   deleteTask: (id: string) => void;
   undoDelete: () => void;
@@ -103,7 +105,7 @@ export function useTasks(): UseTasksState {
     return { totalRevenue, totalTimeTaken, timeEfficiencyPct, revenuePerHour, averageROI, performanceGrade };
   }, [tasks]);
 
-  const addTask = useCallback((task: Omit<Task, 'id'> & { id?: string }) => {
+  const addTask = useCallback((task: TaskFormPayload) => {
     setTasks(prev => {
       const id = task.id ?? crypto.randomUUID();
       const timeTaken = task.timeTaken <= 0 ? 1 : task.timeTaken; // auto-correct
