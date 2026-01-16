@@ -18,6 +18,8 @@ import {
   computeTotalRevenue,
 } from '@/utils/logic';
 
+type TaskFormPayload = Omit<Task, 'id' | 'createdAt' | 'completedAt'> & { id?: string };
+
 function AppContent() {
   const { loading, error, metrics, derivedSorted, addTask, updateTask, deleteTask, undoDelete, lastDeleted, clearLastDeleted } = useTasksContext();
   const handleCloseUndo = () => {};
@@ -42,7 +44,7 @@ function AppContent() {
     });
   }, [derivedSorted, q, fStatus, fPriority]);
 
-  const handleAdd = useCallback((payload: Omit<Task, 'id'>) => {
+  const handleAdd = useCallback((payload: TaskFormPayload) => {
     addTask(payload);
     setActivity(prev => [createActivity('add', `Added: ${payload.title}`), ...prev].slice(0, 50));
   }, [addTask, createActivity]);
